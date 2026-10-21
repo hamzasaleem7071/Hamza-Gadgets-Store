@@ -1,1 +1,251 @@
-index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hamza Gadgets Store</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #172033;
+    }
+    header {
+      background: #101c35;
+      color: white;
+      padding: 22px 14px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 8px; }
+    header p { margin: 0; }
+    .offer {
+      background: #ffcc33;
+      padding: 14px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .intro {
+      padding: 22px 14px;
+      text-align: center;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }
+    .product {
+      background: white;
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+      box-shadow: 0 2px 8px #0001;
+    }
+    .product .emoji { font-size: 52px; }
+    .product h3 { font-size: 17px; }
+    .price { color: #087443; font-weight: bold; }
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 11px;
+      margin: 4px 0;
+      background: #087443;
+      color: white;
+      font-weight: bold;
+      width: 100%;
+      cursor: pointer;
+    }
+    .cart {
+      background: white;
+      margin: 14px;
+      padding: 18px;
+      border-radius: 12px;
+    }
+    .cart button { background: #101c35; }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 7px 0;
+      border: 1px solid #bbb;
+      border-radius: 7px;
+    }
+    .whatsapp { background: #128c4a !important; }
+    footer {
+      text-align: center;
+      background: #101c35;
+      color: white;
+      padding: 20px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hamza Gadgets Store</h1>
+    <p>Smart Gadgets, Best Prices!</p>
+    <p>Pakistan 🇵🇰</p>
+  </header>
+
+  <div class="offer">
+    🎉 BUY 1 GET 1 FREE — Rs. 2,500 🎉
+  </div>
+
+  <section class="intro">
+    <h2>Welcome to Our Store</h2>
+    <p>Quality gadgets at affordable prices.</p>
+  </section>
+
+  <section class="products">
+    <div class="product">
+      <div class="emoji">🎧</div>
+      <h3>Airbuds Pro 10</h3>
+      <p class="price">Rs. 2,500</p>
+      <p>Buy 1 Get 1 Free Offer</p>
+      <button onclick="addToCart('Airbuds Pro 10',2500)">
+        Add to Cart
+      </button>
+    </div>
+    <div class="product">
+      <div class="emoji">🎵</div>
+      <h3>Airbuds Pro 5</h3>
+      <p class="price">Rs. 2,000</p>
+      <button onclick="addToCart('Airbuds Pro 5',2000)">
+        Add to Cart
+      </button>
+    </div>
+    <div class="product">
+      <div class="emoji">🎶</div>
+      <h3>Airbuds Pro 3</h3>
+      <p class="price">Rs. 1,500</p>
+      <button onclick="addToCart('Airbuds Pro 3',1500)">
+        Add to Cart
+      </button>
+    </div>
+    <div class="product">
+      <div class="emoji">📡</div>
+      <h3>Wi-Fi Routers</h3>
+      <p>Ask for price</p>
+      <button onclick="askPrice('Wi-Fi Routers')">
+        Ask Price
+      </button>
+    </div>
+    <div class="product">
+      <div class="emoji">📽️</div>
+      <h3>Projectors</h3>
+      <p>Ask for price</p>
+      <button onclick="askPrice('Projectors')">
+        Ask Price
+      </button>
+    </div>
+    <div class="product">
+      <div class="emoji">📶</div>
+      <h3>Modems</h3>
+      <p>Ask for price</p>
+      <button onclick="askPrice('Modems')">
+        Ask Price
+      </button>
+    </div>
+  </section>
+
+  <section class="cart">
+    <h2>🛒 Your Cart</h2>
+    <div id="cartItems">Your cart is empty.</div>
+    <h3>Total: Rs. <span id="total">0</span></h3>
+    <button onclick="clearCart()">Clear Cart</button>
+
+    <h3>Delivery Details</h3>
+    <input id="customer" placeholder="Your full name">
+    <input id="phone" placeholder="Your phone number" type="tel">
+    <input id="address" placeholder="Your full delivery address">
+    <button class="whatsapp" onclick="orderWhatsApp()">
+      Order on WhatsApp
+    </button>
+  </section>
+
+  <footer>
+    <p>Hamza Gadgets Store</p>
+    <p>Thank you for shopping with us!</p>
+  </footer>
+
+  <script>
+    let cart = [];
+
+    function addToCart(name, price) {
+      const item = cart.find(p => p.name === name);
+      if (item) {
+        item.qty++;
+      } else {
+        cart.push({ name, price, qty: 1 });
+      }
+      renderCart();
+      alert(name + ' added to cart!');
+    }
+
+    function renderCart() {
+      const box = document.getElementById('cartItems');
+      if (!cart.length) {
+        box.textContent = 'Your cart is empty.';
+      } else {
+        box.innerHTML = cart.map((p, i) =>
+          '<p>' + p.name + ' — Rs. ' + p.price +
+          ' × <button style="width:auto" onclick="changeQty(' +
+          i + ',-1)">−</button> ' + p.qty +
+          ' <button style="width:auto" onclick="changeQty(' +
+          i + ',1)">+</button> = Rs. ' +
+          (p.price * p.qty) + '</p>'
+        ).join('');
+      }
+      document.getElementById('total').textContent =
+        cart.reduce((sum, p) => sum + p.price * p.qty, 0);
+    }
+
+    function changeQty(i, amount) {
+      cart[i].qty += amount;
+      if (cart[i].qty <= 0) cart.splice(i, 1);
+      renderCart();
+    }
+
+    function clearCart() {
+      cart = [];
+      renderCart();
+    }
+
+    function askPrice(product) {
+      const msg = 'Assalam-o-Alaikum! I want to ask the price of ' + product;
+      window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+    }
+
+    function orderWhatsApp() {
+      if (!cart.length) {
+        alert('Please add a product to your cart first.');
+        return;
+      }
+      const name = document.getElementById('customer').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      if (!name || !phone || !address) {
+        alert('Please enter your name, phone number and address.');
+        return;
+      }
+      const items = cart.map(p =>
+        p.name + ' x ' + p.qty + ' = Rs. ' +
+        (p.price * p.qty)
+      ).join('\n');
+      const total = cart.reduce((sum, p) =>
+        sum + p.price * p.qty, 0);
+      const msg = 'New Order - Hamza Gadgets Store\n' +
+        'Name: ' + name + '\nPhone: ' + phone +
+        '\nAddress: ' + address + '\n\n' + items +
+        '\n\nTotal: Rs. ' + total;
+      window.open(
+        'https://wa.me/?text=' + encodeURIComponent(msg),
+        '_blank'
+      );
+    }
+  </script>
+</body>
+</html>
